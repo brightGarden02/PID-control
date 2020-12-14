@@ -47,16 +47,17 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 #define _INTERVAL_SERIAL 100  //  시리얼 0.1초 마다 업데이트
 
 // PID parameters
-#define _KP 2       //  비례상수 설정 2
-#define _KI 0.02
-#define _KD 85
-#define _ITERM_MAX 565
+#define _KP 2       
+#define _KI 0.0061
+#define _KD 80.2
+#define _ITERM_MAX 600
 // 255일때 42 stable, speed 600 
 // 400일때 28 stable, speed 600 
 // underdamped: KP 1.2,  KD 42
 // over damped: KP: 1.2, KD: 102
 // critically damped: KP:1.2, KD:56
-// PID 제어 KP:2, KI: 0.02, KD: 85
+// PID 제어 KP:2, KI: 0.0061, KD: 80.2
+
 
 //////////////////////
 // global variables //
@@ -83,7 +84,7 @@ float error_curr, error_prev, control, pterm, dterm, iterm; //  비례 제어를
 
 
 // IR sensor calibraton
-const float coE[] = {0.0000032, -0.0030549, 1.8959057, -71.4515614};
+const float coE[] = {0.0000124, -0.0097272, 3.2765172, -147.3280834};
 float x;
 
 unsigned long time_curr;
@@ -99,6 +100,7 @@ void setup() {
   pinMode(PIN_LED, OUTPUT);  // LED 핀 설정
   myservo.attach(PIN_SERVO);  // Servo 핀 설정
 // initialize global variables
+  pterm = dterm = iterm = 0;
   last_sampling_time_dist = last_sampling_time_servo = last_sampling_time_serial = 0; //  샘플링 시각 기록 변수 초기화
   event_dist = event_servo = event_serial = false;  //  이벤트 bool값 초기화
   dist_target = _DIST_TARGET; // 목표지점 변수 초기화
