@@ -48,15 +48,15 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 
 // PID parameters
 #define _KP 2       
-#define _KI 0.0061
-#define _KD 80.2
+#define _KI 0.006
+#define _KD 80
 #define _ITERM_MAX 600
 // 255일때 42 stable, speed 600 
 // 400일때 28 stable, speed 600 
 // underdamped: KP 1.2,  KD 42
 // over damped: KP: 1.2, KD: 102
 // critically damped: KP:1.2, KD:56
-// PID 제어 KP:2, KI: 0.0061, KD: 80.2
+// PID 제어 KP:2, KI: 0.006, KD: 80
 
 
 //////////////////////
