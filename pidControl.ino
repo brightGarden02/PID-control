@@ -47,16 +47,16 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 #define _INTERVAL_SERIAL 100  //  시리얼 0.1초 마다 업데이트
 
 // PID parameters
-#define _KP 2       
+#define _KP 2     
 #define _KI 0.006
 #define _KD 80
-#define _ITERM_MAX 600
+#define _ITERM_MAX 78
 // 255일때 42 stable, speed 600 
 // 400일때 28 stable, speed 600 
 // underdamped: KP 1.2,  KD 42
 // over damped: KP: 1.2, KD: 102
 // critically damped: KP:1.2, KD:56
-// PID 제어 KP:2, KI: 0.006, KD: 80
+// PID 제어 KP:2, KI: 0.0061, KD: 80.2
 
 
 //////////////////////
@@ -84,7 +84,8 @@ float error_curr, error_prev, control, pterm, dterm, iterm; //  비례 제어를
 
 
 // IR sensor calibraton
-const float coE[] = {0.0000124, -0.0097272, 3.2765172, -147.3280834};
+const float coE[] = {0.0000055, -0.0058625, 2.5600221, -109.4361340};
+
 float x;
 
 unsigned long time_curr;
