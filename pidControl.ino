@@ -96,11 +96,13 @@ unsigned long time_end;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
-// initialize GPIO pins for LED and attach servo 
+
+  // initialize GPIO pins for LED and attach servo 
 
   pinMode(PIN_LED, OUTPUT);         // LED 핀 설정
   myservo.attach(PIN_SERVO);        // Servo 핀 설정
-// initialize global variables
+
+  // initialize global variables
   pterm = dterm = iterm = 0;
   last_sampling_time_dist = last_sampling_time_servo = last_sampling_time_serial = 0; //  샘플링 시각 기록 변수 초기화
   event_dist = event_servo = event_serial = false;    //  이벤트 bool값 초기화
@@ -108,11 +110,13 @@ void setup() {
 
   duty_target = duty_curr = _POS_START;
   
-// move servo to neutral position
+  // move servo to neutral position
   myservo.writeMicroseconds(_DUTY_NEU);           //서보를 중간으로 이동
-// initialize serial port
+
+  // initialize serial port
     Serial.begin(57600);                          //  57600 보드레이트로 아두이노와 통신
-// convert angle speed into duty change per interval.
+  
+  // convert angle speed into duty change per interval.
   duty_chg_per_interval = (_DUTY_MAX - _DUTY_MIN) * (float(_SERVO_SPEED) /  float(_SERVO_ANGLE)) * (float(_INTERVAL_SERVO) / 1000.0);   // 서보의 각속도를 원하는 Angle로 나누어 interval을 설정
   
   Serial.print("duty_chg_per_interval");
@@ -125,6 +129,7 @@ void setup() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
 void loop() {
+  
 /////////////////////
 // Event generator // 설정된 주기마다 이벤트 생성
 /////////////////////
@@ -145,21 +150,23 @@ time_curr = millis();
         event_serial = true;
   }
 time_end = millis();
+  
+  
 ////////////////////
 // Event handlers //
 ////////////////////
 
   if(event_dist) {
      event_dist = false;
-  // get a distance reading from the distance sensor
+    // get a distance reading from the distance sensor
 
       // 거리센서 필터 적용 값
       x = ir_distance_filtered();
       dist_raw = coE[0] * pow(x, 3) + coE[1] * pow(x, 2) + coE[2] * x + coE[3];
       
       
-  // PID control logic
-    error_curr = _DIST_TARGET - dist_raw; // [3158] 목표값 에서 현재값을 뺀 값이 오차값
+    // PID control logic
+    error_curr = _DIST_TARGET - dist_raw; // 목표값 에서 현재값을 뺀 값이 오차값
     pterm = _KP*error_curr;
     iterm += _KI*error_curr;
 
@@ -170,10 +177,10 @@ time_end = millis();
     dterm = _KD * (error_curr - error_prev);
     control = pterm + dterm + iterm;
  
-   //duty_target = f(duty_neutral, control
+    //duty_target = f(duty_neutral, control
      duty_target = duty_neutral + control;
 
-  // keep duty_target value within the range of [_DUTY_MIN, _DUTY_MAX]
+    // keep duty_target value within the range of [_DUTY_MIN, _DUTY_MAX]
     if (duty_target < _DUTY_MIN) {
       duty_target = _DUTY_MIN;  // duty_target < _DUTY_MIN 일 때 duty_target 를 _DUTY_MIN 로 고정
     }
@@ -181,13 +188,14 @@ time_end = millis();
        duty_target = _DUTY_MAX; // duty_target > _DUTY_MAX 일 때 duty_target 를 _DUTY_MAX 로 고정
     }     //  (_DUTY_MIN, _DUTY_MAX) 로 서보의 가동범위를 고정하기 위한 최소한의 안전장치
 
- // update error_prev
+  // update error_prev
   error_prev = error_curr;
  
  }
   
   if(event_servo) {
-    event_servo = false; // [3153] servo EventHandler Ticket -> false
+    event_servo = false; // servo EventHandler Ticket -> false
+    
     // adjust duty_curr toward duty_target by duty_chg_per_interval
     if(duty_target > duty_curr) {
       duty_curr += duty_chg_per_interval;
@@ -205,45 +213,54 @@ time_end = millis();
   
   
  if(event_serial) {
-event_serial = false;
-Serial.print("IR:");
-Serial.print(dist_raw);
-Serial.print(",T:");
-Serial.print(dist_target);
-Serial.print(",P:");
-Serial.print(map(pterm,-1000,1000,510,610));
-Serial.print(",D:");
-Serial.print(map(dterm,-1000,1000,510,610));
-Serial.print(",I:");
-//Serial.print(iterm);
+    event_serial = false;
+    Serial.print("IR:");
+    Serial.print(dist_raw);
+    Serial.print(",T:");
+    Serial.print(dist_target);
+    Serial.print(",P:");
+    Serial.print(map(pterm,-1000,1000,510,610));
+    Serial.print(",D:");
+    Serial.print(map(dterm,-1000,1000,510,610));
+    Serial.print(",I:");
+    //Serial.print(iterm);
 
-Serial.print(map(iterm,-1000,1000,510,610));
-Serial.print(",DTT:");
-Serial.print(map(duty_target,1000,2000,410,510));
-Serial.print(",DTC:");
-Serial.print(map(duty_curr,1000,2000,410,510));
-Serial.println(",-G:245,+G:265,m:0,M:800");
+    Serial.print(map(iterm,-1000,1000,510,610));
+    Serial.print(",DTT:");
+    Serial.print(map(duty_target,1000,2000,410,510));
+    Serial.print(",DTC:");
+    Serial.print(map(duty_curr,1000,2000,410,510));
+    Serial.println(",-G:245,+G:265,m:0,M:800");
 }
 
   
 }
 
-float ir_distance(void){ // return value unit: mm
-  float val;
-  float volt = float(analogRead(PIN_IR));
-  val = ((6762.0/(volt-9.0))-4.0) * 10.0;
-  return val;       //   적외선 센서를 통해 거리를 return
-}
+  float ir_distance(void){ // return value unit: mm
+   
+    float val;
+    float volt = float(analogRead(PIN_IR));
+    val = ((6762.0/(volt-9.0))-4.0) * 10.0;
+    
+    return val;       //   적외선 센서를 통해 거리를 return
+  }
 
 ///////////////////// noise_filter 코드 
 float under_noise_filter(void){ // 아래로 떨어지는 형태의 스파이크를 제거해주는 필터
-  int currReading;
-  int largestReading = 0;
-  for (int i = 0; i < samples_num; i++) {
-    currReading = ir_distance();
-    if (currReading > largestReading) { largestReading = currReading; }
-    // Delay a short time before taking another reading
-    delayMicroseconds(DELAY_MICROS);
+  
+    int currReading;
+    int largestReading = 0;
+    for (int i = 0; i < samples_num; i++) {
+      
+      currReading = ir_distance();
+      
+      if (currReading > largestReading)
+      { 
+        largestReading = currReading;
+      }
+      
+      // Delay a short time before taking another reading
+      delayMicroseconds(DELAY_MICROS);
   }
   return largestReading;
 }
@@ -255,10 +272,17 @@ float ir_distance_filtered(void) { // return value unit: mm
   int currReading;
   int lowestReading = 1024;
   for (int i = 0; i < samples_num; i++) {
+    
     currReading = under_noise_filter();
-    if (currReading < lowestReading) { lowestReading = currReading; }
+    
+    if (currReading < lowestReading)
+    { 
+      lowestReading = currReading;
+    }
   }
-  // eam 필터 추가
+  
+  // ema 필터 추가
   ema_dist = EMA_ALPHA*lowestReading + (1-EMA_ALPHA)*ema_dist;
+  
   return ema_dist;
 }
