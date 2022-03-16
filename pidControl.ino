@@ -2,14 +2,14 @@
 #include <Servo.h>
 
 /////////////////////////////
-// Configurable paramet+ers //
+// Configurable parameters //
 /////////////////////////////
 
 //noise_filter 제거위한 코드 가져옴
 #define _INTERVAL_DIST 30  // DELAY_MICROS * samples_num^2 의 값이 최종 거리측정 인터벌. 넉넉하게 30ms 
 #define DELAY_MICROS  1500 // 필터에 넣을 샘플값을 측정하는 딜레이(고정값)
 #define EMA_ALPHA 0.35     // EMA 필터 값을 결정하는 ALPHA 값. 작성자가 생각하는 최적값
-float ema_dist=0;            // EMA 필터에 사용할 변수
+float ema_dist=0;          // EMA 필터에 사용할 변수
 float filtered_dist;       // 최종 측정된 거리값을 넣을 변수. loop()안에 filtered_dist = filtered_ir_distance(); 형태로 사용
 float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘플 3개로 충분
 
@@ -17,15 +17,15 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 
 
 // Arduino pin assignment
-#define PIN_LED 9                            //  LED를 아두이노의 GPIO 9번 핀에 연결
-#define PIN_SERVO 10    // 서보모터를 아두이노의 10번 핀에 연결
+#define PIN_LED 9     //  LED를 아두이노의 GPIO 9번 핀에 연결
+#define PIN_SERVO 10  // 서보모터를 아두이노의 10번 핀에 연결
 #define PIN_IR A0     // IR센서를 아두이노의 A0 핀에 연결
 
 // Framework setting
 #define _DIST_TARGET 255  //목표로 하는 탁구공 중심 위치까지 거리255mm로 고정
 
 // 측정범위 제한
-#define _DIST_MIN 50                       // 최소 측정 거리 50mm로 고정 
+#define _DIST_MIN 50    // 최소 측정 거리 50mm로 고정 
 #define _DIST_MAX 410   // 측정 거리의 최댓값를 410mm로 설정
 
 // Distance sensor
@@ -33,17 +33,17 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 
 // Servo range
 #define _DUTY_MIN 700     //서보의 가동 최소 각도
-#define _DUTY_NEU 1500        //servo neutral position (90 degree)
-#define _DUTY_MAX 2100                // 서보의 최대 가동 각도
+#define _DUTY_NEU 1500    //servo neutral position (90 degree)
+#define _DUTY_MAX 2100    // 서보의 최대 가동 각도
 #define _POS_START (_DUTY_MIN + 100)
 
 
 // Servo speed control
 #define _SERVO_ANGLE 100   // 서보의 각도(100º) 
-#define _SERVO_SPEED 600             //  서보 속도를 30으로 설정 // d제어할때 2000 해야 풀 속도
+#define _SERVO_SPEED 600   //  서보 속도를 30으로 설정 // d제어할때 2000 해야 풀 속도
 
 // Event periods
-#define _INTERVAL_SERVO 20 // 서보를 20ms마다 조작하기
+#define _INTERVAL_SERVO 20    // 서보를 20ms마다 조작하기
 #define _INTERVAL_SERIAL 100  //  시리얼 0.1초 마다 업데이트
 
 // PID parameters
@@ -64,9 +64,9 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 //////////////////////
 
 // Servo instance
-Servo myservo;  //  Servo를 제어할 Object를 생성
+Servo myservo;               //  Servo를 제어할 Object를 생성
 // Distance sensor
-float dist_target; // location to send the ball 
+float dist_target;           // location to send the ball 
 float dist_raw, dist_ema;    // 실제 거리측정값과 ema필터를 적용한 값을 저장할 변수
 
 // Event periods
@@ -75,7 +75,7 @@ bool event_dist, event_servo, event_serial; // 거리센서, 서보, 시리얼 �
 
 
 // Servo speed control
-int duty_chg_per_interval;    // 주기동안 duty 변화량 변수
+int duty_chg_per_interval;     // 주기동안 duty 변화량 변수
 int duty_target, duty_curr;    // 보의 목표위치와 서보에 실제로 입력할 위치
 int duty_neutral;
 
@@ -98,18 +98,18 @@ unsigned long time_end;
 void setup() {
 // initialize GPIO pins for LED and attach servo 
 
-  pinMode(PIN_LED, OUTPUT);  // LED 핀 설정
-  myservo.attach(PIN_SERVO);  // Servo 핀 설정
+  pinMode(PIN_LED, OUTPUT);         // LED 핀 설정
+  myservo.attach(PIN_SERVO);        // Servo 핀 설정
 // initialize global variables
   pterm = dterm = iterm = 0;
   last_sampling_time_dist = last_sampling_time_servo = last_sampling_time_serial = 0; //  샘플링 시각 기록 변수 초기화
-  event_dist = event_servo = event_serial = false;  //  이벤트 bool값 초기화
-  dist_target = _DIST_TARGET; // 목표지점 변수 초기화
+  event_dist = event_servo = event_serial = false;    //  이벤트 bool값 초기화
+  dist_target = _DIST_TARGET;                         // 목표지점 변수 초기화
 
   duty_target = duty_curr = _POS_START;
   
 // move servo to neutral position
-  myservo.writeMicroseconds(_DUTY_NEU); //서보를 중간으로 이동
+  myservo.writeMicroseconds(_DUTY_NEU);           //서보를 중간으로 이동
 // initialize serial port
     Serial.begin(57600);                          //  57600 보드레이트로 아두이노와 통신
 // convert angle speed into duty change per interval.
