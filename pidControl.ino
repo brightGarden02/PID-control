@@ -32,7 +32,7 @@ float samples_num = 3;     // 스파이크 제거를 위한 부분필터에 샘�
 //#define _DIST_ALPHA 0.0  // ema 필터의 alpha 값을 0.0으로 설정
 
 // Servo range
-#define _DUTY_MIN 700     //서보의 가동 최소 각도
+#define _DUTY_MIN 700     //서보의 최소 가동 각도
 #define _DUTY_NEU 1500    //servo neutral position (90 degree)
 #define _DUTY_MAX 2100    // 서보의 최대 가동 각도
 #define _POS_START (_DUTY_MIN + 100)
